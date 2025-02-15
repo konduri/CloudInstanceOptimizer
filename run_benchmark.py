@@ -26,7 +26,8 @@ from src.utils import (
     submit_jobs,
     aws_batch_wait,
     get_instance_specs,
-    submit_slurm_job
+    submit_slurm_job,
+    get_valid_instance_list
 )
 from skopt import Optimizer
 from skopt.space import Real, Integer
@@ -38,11 +39,8 @@ import pygad
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
-#TODO: figure out a way to not do this
-def load_valid_instance_list():
-    with open("valid_list.txt", "r") as f:
-        valid_list = f.read().replace("\n", "").replace(" ", "").split(",")
-    return valid_list
+def load_valid_instance_list(region):
+    return get_valid_instance_list(region)
 
 def get_job_resources(region, metadata):
     job_definition_name = metadata["JDec2benchmark"].split("/")[-1].split(":")[0]
@@ -436,8 +434,8 @@ def process_results(filtered_file_names, region):
 
 
 def run_optimization(json_config):
-    valid_list = load_valid_instance_list()
     region = json_config["region_name"]
+    valid_list = load_valid_instance_list(region)
     replicates = json_config["replications"]
     s3_bucket_name = json_config["s3_bucket_name"]
     job_command = json_config["run_cmd"].split()
@@ -643,8 +641,8 @@ def get_queue_instance_type_map(batch_client, metadata, instance_types):
 
 
 def run_benchmark(json_config):
-    valid_list = load_valid_instance_list()
     region = json_config["region_name"]
+    valid_list = load_valid_instance_list(region)
     replicates = json_config["replications"]
     s3_bucket_name = json_config["s3_bucket_name"]
     job_command = json_config["run_cmd"].split()

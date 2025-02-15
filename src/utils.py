@@ -662,6 +662,25 @@ def get_ec2_metadata(path='/latest/meta-data/'):
     return metadata_response.text
 
 
+def get_valid_instance_list( region=None ):
+    """
+    Filter list of all instances from description of all instance types for the current region.
+    """
+    # Create an EC2 client
+    ec2_client = boto3.client('ec2', region_name=region)
+
+    try:
+        # Describe the instance type
+        response = ec2_client.describe_instance_types()
+
+        return [instance['InstanceType'] for instance in response['InstanceTypes']]
+
+    except Exception as e:
+        print(f"Error retrieving valid instance list ")
+
+        return None
+
+
 def get_instance_specs(instance_type, region=None):
     """
     Retrieves the RAM, CPU, and GPU specifications for a given Amazon EC2 instance type.
