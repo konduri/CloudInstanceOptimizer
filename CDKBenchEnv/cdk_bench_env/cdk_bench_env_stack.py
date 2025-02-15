@@ -21,6 +21,10 @@ def get_available_azs(region_name):
     )
     return [az['ZoneName'] for az in response['AvailabilityZones']]
 
+def get_valid_instance_list(region_name):
+    ec2_client = boto3.client('ec2', region_name=region_name)
+    response = ec2_client.describe_instance_types()
+    return [instance['InstanceType'] for instance in response['InstanceTypes']]
 
 class CdkBenchEnvStack(Stack):
 
@@ -98,9 +102,7 @@ class CdkBenchEnvStack(Stack):
         requested_instance = json_config["ec2_types"]
         requested_type = list(map(lambda x: x.split('.')[0], requested_instance))
 
-        with open("../valid_list.txt", 'r') as f:
-            valid_list = f.read()
-        valid_list = valid_list.replace('\n','').replace(' ','').split(',')
+        valid_list = get_valid_instance_list(json_config["region_name"])
 
         ec2types = []
         for family_types in json_config['ec2_types']:
