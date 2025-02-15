@@ -15,7 +15,7 @@ def get_available_azs(region_name):
     ec2_client = boto3.client('ec2', region_name=region_name)
     response = ec2_client.describe_availability_zones(
         Filters=[
-            {'Name': 'opt-in-status', 'Values': ['opt-in-not-required', 'opted-in']},
+            {'Name': 'opt-in-status', 'Values': ['opt-in-not-required']},
             {'Name': 'state', 'Values': ['available']}
         ]
     )
