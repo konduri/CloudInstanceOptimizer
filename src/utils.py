@@ -493,7 +493,9 @@ def get_ec2_on_demand_price(instance_type: str, region: str) -> List[float]:
     Returns:
         List[float]: A list of on-demand prices (in USD) for the given instance type and region.
     """
-    client = boto3.client('pricing', region_name=region)
+    # Pricing is only available in us-east-1 region
+    PRICING_API_AVAILABLE_ONLY_IN_THIS_REGION = 'us-east-1'
+    client = boto3.client('pricing', PRICING_API_AVAILABLE_ONLY_IN_THIS_REGION )
 
     region_name = get_region_name(region)
 
